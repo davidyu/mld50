@@ -2,7 +2,6 @@ local gamestate = require 'vendor/hump/gamestate'
 
 -- public gamestates
 menu = require 'menu'
-game = require 'game'
 
 function love.load()
   love.window.setMode( 800, 600 )

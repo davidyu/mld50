@@ -1,6 +1,11 @@
 local menu = {}
 
-function menu:init()
+local gamestate = require 'vendor/hump/gamestate'
+local game = require 'game'
+
+function menu:enter()
+  -- temp, push to game immediately
+  gamestate.switch( game )
 end
 
 function menu:draw()
