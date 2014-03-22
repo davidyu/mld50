@@ -1,10 +1,14 @@
--- modules
-local utils = require 'utils'
+-- vendor libs
 local gamestate = require 'vendor/hump/gamestate'
 local Camera = require 'vendor/hump/camera'
+local Grid = require 'vendor/Jumper/jumper.grid'
+local Pathfinder = require 'vendor/Jumper/jumper.pathfinder'
 
+-- internal game modules
+local utils = require 'utils'
 local Scv = require 'units/scv'
 
+-- locals
 local cam = nil
 local map = nil
 local game = {}
