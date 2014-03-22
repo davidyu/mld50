@@ -1,10 +1,11 @@
 -- vendor libs
+require 'vendor/AnAL'
 local gamestate = require 'vendor/hump/gamestate'
 local Camera = require 'vendor/hump/camera'
 local Grid = require 'vendor/Jumper/jumper.grid'
 local Pathfinder = require 'vendor/Jumper/jumper.pathfinder'
 
--- internal game modules
+-- game modules
 local utils = require 'utils'
 local Scv = require 'units/scv'
 
@@ -13,6 +14,7 @@ local cam = nil
 local map = nil
 local game = {}
 local selection = {}
+local entities = {}
 
 function game:init()
 end
@@ -21,7 +23,7 @@ function game:enter()
   -- just the same map every time for now
   map = utils.buildMap( "art/maps/standard" )
   cam = Camera( 0, 0 )
-  scv = Scv:new()
+  table.insert( entities, Scv:new() )
 end
 
 function game:draw()
@@ -31,6 +33,11 @@ function game:draw()
     for x = 1, map.width do
       love.graphics.draw( map.tileset, map.tiles[ ( y - 1 ) * map.width + x ], ( x - 1 ) * map.tilewidth, ( y - 1 ) * map.tileheight )
     end
+  end
+
+  -- draw entities
+  for i, entity in ipairs( entities ) do
+    entity.anim:draw( 9 * map.tilewidth, 9 * map.tileheight )
   end
   cam:detach()
 end
@@ -64,6 +71,12 @@ function game:update( dt )
 
   if cy > map.tileheight * map.height then
     cam:lookAt( cx, map.tileheight * map.height )
+  end
+
+  -- update entity anims
+  for i, entity in ipairs( entities ) do
+    entity.anim:update( dt )
+    entity:updateAnim( 0, 0 )
   end
 end
 
