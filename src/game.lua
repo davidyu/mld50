@@ -3,6 +3,8 @@ local utils = require 'utils'
 local gamestate = require 'vendor/hump/gamestate'
 local Camera = require 'vendor/hump/camera'
 
+local Scv = require 'units/scv'
+
 local cam = nil
 local map = nil
 local game = {}
@@ -15,6 +17,7 @@ function game:enter()
   -- just the same map every time for now
   map = utils.buildMap( "art/maps/standard" )
   cam = Camera( 0, 0 )
+  scv = Scv:new()
 end
 
 function game:draw()
