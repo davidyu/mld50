@@ -1,21 +1,29 @@
 require 'vendor/AnAL'
+local PrettyPrint = require 'vendor/lua-pretty-print/PrettyPrint'
 
-local Unit = require 'units/unit'
-local scv = Unit:new()
+local scv = {}
+scv.__index = scv
 
-function scv:new()
-  o = Unit:new()
-  setmetatable( o, self )
-  self.__index = self
-  self.animrefs = {}
+function scv:new( x, y )
+  print( ("%d %d"):format( x, y ) )
+  local animrefs = {}
   local spritesheet = love.graphics.newImage( "art/spritesheets/scv.png" )
-  self.anim = newAnimation( spritesheet, 32, 32, 0.5, 4 )
-  self.animrefs[ 'mu' ] = { first = 1, last = 1 }
-  self.animrefs[ 'md' ] = { first = 2, last = 2 }
-  self.animrefs[ 'ml' ] = { first = 3, last = 3 }
-  self.animrefs[ 'mr' ] = { first = 4, last = 4 }
-  self.animstate = 'md'
-  return o
+  local animstate = 'md'
+  local anim = newAnimation( spritesheet, 32, 32, 0.5, 4 )
+  animrefs[ 'mu' ] = { first = 1, last = 1 }
+  animrefs[ 'md' ] = { first = 2, last = 2 }
+  animrefs[ 'ml' ] = { first = 3, last = 3 }
+  animrefs[ 'mr' ] = { first = 4, last = 4 }
+  return setmetatable( {
+    x = x or 0,
+    y = y or 0,
+    state = 'idle',
+    movetarget = nil,
+    attacktarget = nil,
+    animrefs = animrefs,
+    animstate = animstate,
+    anim = anim
+  }, scv )
 end
 
 function scv:updateAnim( dx, dy )

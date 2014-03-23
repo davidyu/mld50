@@ -1,15 +1,13 @@
 local unit = {}
+unit.__index = unit
 
-function unit:new()
-  o = {}
-  setmetatable( o, self )
-  self.__index = self
-  self.movetarget = {}
-  self.attacktarget = {}
-  self.state = 'idle'
-  self.x = 0
-  self.y = 0
-  return o
+function unit:new( x, y )
+  return setmetatable(
+    { x = x or 0,
+      y = y or 0,
+      state = 'idle',
+      movetarget = nil,
+      attacktarget = nil }, unit )
 end
 
 return unit

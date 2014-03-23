@@ -42,7 +42,17 @@ function game:enter()
   pather = Pathfinder( Grid( utils.buildCollisionMap( map ) ), 'ASTAR', 0 )
   pather:setMode( 'ORTHOGONAL' )
   doTestPathfind( pather )
-  table.insert( entities, Scv:new() )
+
+  math.randomseed( os.time() )
+  table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
+  table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
+  table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
+  table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
+  table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
+  table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
+end
+
+local function makeSelection( x, y, w, h )
 end
 
 function game:draw()
@@ -56,7 +66,7 @@ function game:draw()
 
   -- draw entities
   for i, entity in ipairs( entities ) do
-    entity.anim:draw( 9 * map.tilewidth, 9 * map.tileheight )
+    entity.anim:draw( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight )
   end
   cam:detach()
 end
