@@ -76,9 +76,20 @@ end
 function game:mousereleased( x, y, button )
   selw, selh = x - selx, y - sely
 
-  local min = 5 -- any selection rect smaller than this will be ignored
+  local min = 5 -- any selection rect smaller than this will be (sort of) ignored
 
   if math.abs( selw ) < min or math.abs( selh ) < min then
+    -- we'll see if there's a unit under the mouse cursor
+    local x, y = cam:worldCoords( selx, sely )
+    table.foreach( selection, function( _, entity ) entity.selected = false end )
+    for i, entity in ipairs( entities ) do
+      if ( entity.x - 1 ) * map.tilewidth <= x and ( entity.y - 1 ) * map.tileheight <= y and ( entity.x ) * map.tilewidth >= x and ( entity.y ) * map.tileheight >= y then
+        selection = {}
+        table.insert( selection, entity )
+        break
+      end
+    end
+    table.foreach( selection, function( _, entity ) entity.selected = true end )
     return
   end
 
@@ -110,10 +121,10 @@ function game:draw()
 
   -- draw entities
   for i, entity in ipairs( entities ) do
-    entity.anim:draw( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight )
     if entity.selected then
       ux.drawSelection( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight )
     end
+    entity.anim:draw( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight )
   end
   cam:detach()
 end

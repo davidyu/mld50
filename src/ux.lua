@@ -17,7 +17,7 @@ function ux.accselect( x, y , w, h, entities, map )
 end
 
 function ux.drawSelection( x, y, size )
-  love.graphics.draw( ux.selectsprite, x, y )
+  love.graphics.draw( ux.selectsprite, x + 16, y + 20 )
 end
 
 return ux
