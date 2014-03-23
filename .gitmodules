@@ -4,3 +4,6 @@
 [submodule "src/vendor/Jumper"]
 	path = src/vendor/Jumper
 	url = https://github.com/Yonaba/Jumper.git
+[submodule "src/vendor/lua-pretty-print"]
+	path = src/vendor/lua-pretty-print
+	url = https://github.com/Anaminus/lua-pretty-print.git

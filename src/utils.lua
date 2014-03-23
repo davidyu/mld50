@@ -1,4 +1,24 @@
 local utils = {}
+local PrettyPrint = require 'vendor/lua-pretty-print/PrettyPrint'
+
+function utils.buildCollisionMap( map )
+  local colMap = {}
+  local x, y = 1, 1
+  table.insert( colMap, {} )
+  for i, impass in ipairs( map.impassable ) do
+    local col = 0
+    if impass then col = 1 end
+    table.insert( colMap[y], col )
+
+    x = x + 1
+    if i % map.width == 0 and ( i / map.width ) < map.height then
+      y = y + 1
+      table.insert( colMap, {} )
+      x = 1
+    end
+  end
+  return colMap
+end
 
 function utils.buildMap( path )
   assert( love.filesystem.exists( path .. ".lua" ),

@@ -1,5 +1,6 @@
 -- vendor libs
 require 'vendor/AnAL'
+local PrettyPrint = require 'vendor/lua-pretty-print/PrettyPrint'
 local gamestate = require 'vendor/hump/gamestate'
 local Camera = require 'vendor/hump/camera'
 local Grid = require 'vendor/Jumper/jumper.grid'
@@ -15,14 +16,32 @@ local map = nil
 local game = {}
 local selection = {}
 local entities = {}
+local pather = nil
 
 function game:init()
+end
+
+local function doTestPathfind( pather )
+  local sx, sy = 1, 1
+  local dx, dy = 1, 3
+
+  local path, length = pather:getPath( sx, sy, dx, dy )
+  if path then
+    for node, count in path:nodes() do
+      print( ('Step: %d - x: %d , y: %d'):format( count, node:getX(), node:getY() ) )
+    end
+  else
+    print( "no path found!" )
+  end
 end
 
 function game:enter()
   -- just the same map every time for now
   map = utils.buildMap( "art/maps/standard" )
   cam = Camera( 0, 0 )
+  pather = Pathfinder( Grid( utils.buildCollisionMap( map ) ), 'ASTAR', 0 )
+  pather:setMode( 'ORTHOGONAL' )
+  doTestPathfind( pather )
   table.insert( entities, Scv:new() )
 end
 
