@@ -6,6 +6,17 @@ local Camera = require 'vendor/hump/camera'
 local Grid = require 'vendor/Jumper/jumper.grid'
 local Pathfinder = require 'vendor/Jumper/jumper.pathfinder'
 
+-- hack std
+function math.clamp(x, min, max)
+  if x < min then
+    return min
+  elseif x > max then
+    return max
+  else
+    return x
+  end
+end
+
 -- game modules
 local utils = require 'utils'
 local Scv = require 'units/scv'
@@ -111,28 +122,21 @@ function game:update( dt )
     cam:move( -speed, 0 )
   elseif love.mouse.getX() + margin >= 800 then
     cam:move( speed, 0 )
-  elseif love.mouse.getY() - margin <= 0 then
+  end
+
+  if love.mouse.getY() - margin <= 0 then
     cam:move( 0, -speed )
   elseif love.mouse.getY() + margin >= 600 then
     cam:move( 0, speed )
   end
 
+  -- clamp camera so it doesn't go off map
   local cx, cy = cam:pos()
-  if cx < 0 then
-    cam:lookAt( 0, cy )
-  end
 
-  if cy < 0 then
-    cam:lookAt( cx, 0 )
-  end
+  cx = math.clamp( cx, 400, map.tilewidth * map.width - 400 )
+  cy = math.clamp( cy, 300, map.tileheight * map.height - 300 )
 
-  if cx > map.tilewidth * map.width then
-    cam:lookAt( map.tilewidth * map.width, cy )
-  end
-
-  if cy > map.tileheight * map.height then
-    cam:lookAt( cx, map.tileheight * map.height )
-  end
+  cam:lookAt( cx, cy )
 
   -- update entity anims
   for i, entity in ipairs( entities ) do
