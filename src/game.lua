@@ -9,14 +9,19 @@ local Pathfinder = require 'vendor/Jumper/jumper.pathfinder'
 -- game modules
 local utils = require 'utils'
 local Scv = require 'units/scv'
+local ux = require 'ux'
 
 -- locals
 local cam = nil
 local map = nil
 local game = {}
-local selection = {}
 local entities = {}
 local pather = nil
+
+-- selection
+local selx, sely = 0, 0
+local selw, selh = 0, 0
+local selection = {}
 
 function game:init()
 end
@@ -44,6 +49,7 @@ function game:enter()
   doTestPathfind( pather )
 
   math.randomseed( os.time() )
+
   table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
   table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
   table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
@@ -52,7 +58,33 @@ function game:enter()
   table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
 end
 
-local function makeSelection( x, y, w, h )
+function game:mousepressed( x, y, button )
+  selx, sely = x, y
+end
+
+function game:mousereleased( x, y, button )
+  selw, selh = x - selx, y - sely
+
+  local min = 5 -- any selection rect smaller than this will be ignored
+
+  if math.abs( selw ) < min or math.abs( selh ) < min then
+    return
+  end
+
+  -- flip
+  if selw < 0 then
+    selw = selx - x
+    selx = x
+  end
+
+  if selh < 0 then
+    selh = sely - y
+    sely = y
+  end
+
+  selx, sely = cam:worldCoords( selx, sely )
+  selection = ux.select( selx, sely, selw, selh, entities, map )
+  print( table.getn( selection ) )
 end
 
 function game:draw()

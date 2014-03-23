@@ -5,7 +5,6 @@ local scv = {}
 scv.__index = scv
 
 function scv:new( x, y )
-  print( ("%d %d"):format( x, y ) )
   local animrefs = {}
   local spritesheet = love.graphics.newImage( "art/spritesheets/scv.png" )
   local animstate = 'md'

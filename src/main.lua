@@ -20,3 +20,11 @@ end
 function love.draw()
   gamestate.draw()
 end
+
+function love.mousepressed( x, y, button )
+  gamestate.mousepressed( x, y, button )
+end
+
+function love.mousereleased( x, y, button )
+  gamestate.mousereleased( x, y, button )
+end
