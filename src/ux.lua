@@ -1,6 +1,10 @@
 local ux = {}
 
-function ux.select( x, y , w, h, entities, map )
+function ux.init()
+  ux.selectsprite = love.graphics.newImage( "art/ui/selection.png" )
+end
+
+function ux.accselect( x, y , w, h, entities, map )
   -- print( ( "%d %d %d %d"):format( x, y, w, h ) )
   local selections = {}
   for i, entity in ipairs( entities ) do
@@ -10,6 +14,10 @@ function ux.select( x, y , w, h, entities, map )
     end
   end
   return selections
+end
+
+function ux.drawSelection( x, y, size )
+  love.graphics.draw( ux.selectsprite, x, y )
 end
 
 return ux

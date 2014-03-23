@@ -16,8 +16,12 @@ function scv:new( x, y )
   return setmetatable( {
     x = x or 0,
     y = y or 0,
+    owner = 0,
+    selected = false,
     state = 'idle',
-    movetarget = nil,
+    tx = nil,
+    ty = nil,
+    pathtable = {},
     attacktarget = nil,
     animrefs = animrefs,
     animstate = animstate,
@@ -35,6 +39,14 @@ function scv:updateAnim( dx, dy )
   if self.anim:getCurrentFrame() == self.animrefs[ self.animstate ].last then
     self.anim:seek( self.animrefs[ self.animstate ].first )
   end
+end
+
+function scv:update()
+  if table.maxn( self.pathtable ) > 0 then
+    nextnode = table.remove( self.pathtable )
+  end
+
+  self:updateAnim( dx, dy )
 end
 
 return scv

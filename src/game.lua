@@ -55,18 +55,18 @@ function game:enter()
   -- just the same map every time for now
   map = utils.buildMap( "art/maps/standard" )
   cam = Camera( 0, 0 )
+  ux.init()
+
   pather = Pathfinder( Grid( utils.buildCollisionMap( map ) ), 'ASTAR', 0 )
   pather:setMode( 'ORTHOGONAL' )
+
   doTestPathfind( pather )
 
   math.randomseed( os.time() )
 
-  table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
-  table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
-  table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
-  table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
-  table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
-  table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
+  for i = 1, 20 do
+    table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
+  end
 end
 
 function game:mousepressed( x, y, button )
@@ -94,8 +94,9 @@ function game:mousereleased( x, y, button )
   end
 
   selx, sely = cam:worldCoords( selx, sely )
-  selection = ux.select( selx, sely, selw, selh, entities, map )
-  print( table.getn( selection ) )
+  table.foreach( selection, function( _, entity ) entity.selected = false end )
+  selection = ux.accselect( selx, sely, selw, selh, entities, map )
+  table.foreach( selection, function( _, entity ) entity.selected = true end )
 end
 
 function game:draw()
@@ -110,6 +111,9 @@ function game:draw()
   -- draw entities
   for i, entity in ipairs( entities ) do
     entity.anim:draw( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight )
+    if entity.selected then
+      ux.drawSelection( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight )
+    end
   end
   cam:detach()
 end
