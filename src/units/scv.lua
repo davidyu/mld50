@@ -44,13 +44,13 @@ function scv:updateAnim( dx, dy )
   end
 end
 
-function scv:update( pather, dt )
+function scv:update( pather, map, dt )
   self.time = self.time + dt
 
   local newx, newy = self.x, self.y
 
   if self.time > 0.2 then
-    self.time = 0
+    -- do action, timer is reset on postupdate
 
     if self.tx > 0 and self.ty > 0 then
       local path, length = pather:getPath( self.x, self.y, self.tx, self.ty )
@@ -59,7 +59,7 @@ function scv:update( pather, dt )
         for node, count in path:nodes() do
           table.insert( self.pathtable, node )
         end
-        table.remove( self.pathtable, 1 ) -- remove first thing
+        table.remove( self.pathtable, 1 ) -- remove first node in path, which is your current position
       end
       -- reset
       self.tx, self.ty = -1, -1
@@ -68,11 +68,46 @@ function scv:update( pather, dt )
     if table.maxn( self.pathtable ) > 0 then
       local nextnode = table.remove( self.pathtable, 1 )
       newx, newy = nextnode:getX(), nextnode:getY()
+      -- collision check
+      if map.occupied[ newx + ( newy - 1 ) * map.width ] ~= nil then
+        -- repath
+        if table.maxn( self.pathtable ) > 0 then -- only if destination not occupied
+          local target = table.remove( self.pathtable )
+          self.tx, self.ty = target:getX(), target:getY() -- try again next turn
+          newx, newy = self.x, self.y
+        end
+        newx, newy = self.x, self.y
+      end
     end
   end
 
   dx, dy = newx - self.x, newy - self.y
   self:updateAnim( dx, dy )
+  self.x, self.y = newx, newy
+
+end
+
+function scv:postupdate( pather, map )
+  local newx, newy = self.x, self.y
+
+  if self.time > 0.2 then
+    self.time = 0
+
+    -- move to nearest square with no collision
+    local nx, ny = newx, newy
+    while nx < map.width and ny < map.height and map.occupied[ nx + ( ny - 1 ) * map.width ] ~= nil and map.occupied[ nx + ( ny - 1 ) * map.width ] > 1 do
+      -- guess-verify
+      nx, ny = newx + math.random( 2 ) - 1, newy + math.random( 2 ) - 1
+    end
+    newx, newy = nx, ny
+
+    -- repath if necessary
+    if table.maxn( self.pathtable ) > 0 then
+      local target = table.remove( self.pathtable )
+      self.tx, self.ty = target:getX(), target:getY()
+    end
+  end
+
   self.x, self.y = newx, newy
 
 end

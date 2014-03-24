@@ -37,18 +37,18 @@ local selection = {}
 function game:init()
 end
 
-local function doTestPathfind( pather )
-  local sx, sy = 1, 1
-  local dx, dy = 1, 3
+local function rebuildCollisionCache()
+  map.occupied = {}
 
-  local path, length = pather:getPath( sx, sy, dx, dy )
-  if path then
-    for node, count in path:nodes() do
-      print( ('Step: %d - x: %d , y: %d'):format( count, node:getX(), node:getY() ) )
+  for i, entity in ipairs( entities ) do
+    if map.occupied[ entity.x + ( entity.y - 1 ) * map.width ] == nil then
+      map.occupied[ entity.x + ( entity.y - 1 ) * map.width ] = 1
+    else
+      map.occupied[ entity.x + ( entity.y - 1 ) * map.width ] = map.occupied[ entity.x + ( entity.y - 1 ) * map.width ] + 1
     end
-  else
-    print( "no path found!" )
   end
+
+  pather:setGrid( Grid( utils.buildCollisionMap( map ) ) )
 end
 
 function game:enter()
@@ -59,8 +59,6 @@ function game:enter()
 
   pather = Pathfinder( Grid( utils.buildCollisionMap( map ) ), 'ASTAR', 0 )
   pather:setMode( 'ORTHOGONAL' )
-
-  doTestPathfind( pather )
 
   math.randomseed( os.time() )
 
@@ -168,19 +166,22 @@ function game:update( dt )
 
   -- update entities
   for i, entity in ipairs( entities ) do
-    entity:update( pather, dt )
+    entity:update( pather, map, dt )
     -- update anim module
     entity.anim:update( dt )
   end
 
   -- update map occupied cache
-  map.occupied = {}
+  rebuildCollisionCache()
 
+  -- resolve same-tile collisions
   for i, entity in ipairs( entities ) do
-    map.occupied[ entity.x + ( entity.y - 1 ) * map.width ] = true
+    -- update anim module
+    entity:postupdate( pather, map )
   end
 
-  pather:setGrid( Grid( utils.buildCollisionMap( map ) ) )
+  -- update map occupied cache after collision resolve
+  rebuildCollisionCache()
 
 end
 
