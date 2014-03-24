@@ -6,9 +6,9 @@ scv.__index = scv
 
 function scv:new( x, y )
   local animrefs = {}
-  local spritesheet = love.graphics.newImage( "art/spritesheets/scv.png" )
+  local spritesheet = love.graphics.newImage( "art/spritesheets/SCV_Placeholder.png" )
   local animstate = 'md'
-  local anim = newAnimation( spritesheet, 32, 32, 0.5, 4 )
+  local anim = newAnimation( spritesheet, 64, 64, 0.5, 4 )
   animrefs[ 'mu' ] = { first = 1, last = 1 }
   animrefs[ 'md' ] = { first = 2, last = 2 }
   animrefs[ 'ml' ] = { first = 3, last = 3 }
@@ -17,6 +17,7 @@ function scv:new( x, y )
     x = x or 0,
     y = y or 0,
     owner = 0,
+    health = 40.0,
     selected = false,
     state = 'idle',
     tx = nil,
