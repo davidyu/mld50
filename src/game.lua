@@ -74,6 +74,19 @@ function game:mousepressed( x, y, button )
 end
 
 function game:mousereleased( x, y, button )
+  if button == 'r' then
+    -- set target
+    local wx, wy = cam:worldCoords( x, y )
+    local tx = math.floor( wx / map.tilewidth ) + 1
+    local ty = math.floor( wy / map.tileheight ) + 1
+    table.foreach( selection, function( _, entity )
+                                entity.tx = tx
+                                entity.ty = ty
+                              end )
+    return
+  end
+
+  -- left-click
   selw, selh = x - selx, y - sely
 
   local min = 5 -- any selection rect smaller than this will be (sort of) ignored
@@ -155,8 +168,8 @@ function game:update( dt )
 
   -- update entity anims
   for i, entity in ipairs( entities ) do
+    entity:update( pather, dt )
     entity.anim:update( dt )
-    entity:updateAnim( 0, 0 )
   end
 end
 
