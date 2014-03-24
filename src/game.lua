@@ -33,6 +33,8 @@ local pather = nil
 -- selection
 local selx, sely = 0, 0
 local selw, selh = 0, 0
+local prevseltime = 0
+local seltime = 0
 local selection = {}
 
 function game:init()
@@ -72,7 +74,7 @@ function game:enter()
     table.insert( entities, Scv:new( newx, newy ) )
   end
 
-  basex, basey = math.random( map.width ), math.random( map.height )
+  basex, basey = math.random( map.width - 5 ), math.random( map.height - 5 )
   for i = 1, 5 do
     local newx, newy = basex + math.random( 5 ), basey + math.random( 5 )
     while newx > map.width or newy > map.height do
@@ -84,6 +86,8 @@ end
 
 function game:mousepressed( x, y, button )
   selx, sely = x, y
+  prevseltime = seltime
+  seltime = love.timer.getTime()
 end
 
 function game:mousereleased( x, y, button )
@@ -113,6 +117,18 @@ function game:mousereleased( x, y, button )
         selection = {}
         table.insert( selection, entity )
         break
+      end
+    end
+    if seltime - prevseltime < 0.5 then
+      -- double click, select all units of type
+      if table.maxn( selection ) > 0 then
+        local type = selection[1].__index
+        local originalentity = selection[1]
+        for i, entity in ipairs( entities ) do
+          if entity.__index == type and entity.owner == 0 and entity ~= originalentity then
+            table.insert( selection, entity )
+          end
+        end
       end
     end
     table.foreach( selection, function( _, entity ) entity.selected = true end )

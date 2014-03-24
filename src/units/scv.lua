@@ -31,7 +31,7 @@ function scv:new( x, y, owner )
     animrefs = animrefs,
     animstate = animstate,
     anim = anim,
-    time = 0
+    time = 0,
   }, scv )
 end
 
