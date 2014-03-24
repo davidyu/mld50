@@ -171,12 +171,49 @@ function game:draw()
     love.graphics.setColor( r,g,b,a )
   end
 
+  -- draw FOW
+  local r,g,b,a = love.graphics.getColor()
+  for y = 1, map.height do
+    for x = 1, map.width do
+      if map.fow[ ( y - 1 ) * map.width + x ] == nil then
+        love.graphics.setColor( 0, 0, 0, 255 )
+        love.graphics.rectangle( 'fill', ( x - 1 ) * map.tilewidth, ( y - 1 ) * map.tileheight, 64, 64 )
+      elseif map.fow[ ( y - 1 ) * map.width + x ] == true then
+        love.graphics.setColor( 0, 0, 0, 144 )
+        love.graphics.rectangle( 'fill', ( x - 1 ) * map.tilewidth, ( y - 1 ) * map.tileheight, 64, 64 )
+      end
+    end
+  end
+  love.graphics.setColor( r,g,b,a )
+
   cam:detach()
 end
 
 function game:update( dt )
   -- backend
   ai.update( entities, map )
+
+  -- reset FOW
+  for k, v in pairs( map.fow ) do
+    if v == false then
+      map.fow[ k ] = true
+    end
+  end
+
+  -- clear FOW
+  for i, entity in ipairs( entities ) do
+    -- clear FOW within the viewing range of all friendly units
+    if entity.owner == 0 then
+      for i = 0, entity.sight do
+        for j = 0, entity.sight - i do
+          map.fow[ entity.x + i + ( entity.y - 1 - j ) * map.width ] = false
+          map.fow[ entity.x - i + ( entity.y - 1 + j ) * map.width ] = false
+          map.fow[ entity.x + i + ( entity.y - 1 + j ) * map.width ] = false
+          map.fow[ entity.x - i + ( entity.y - 1 - j ) * map.width ] = false
+        end
+      end
+    end
+  end
 
   -- user facing
   -- update camera

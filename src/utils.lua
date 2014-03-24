@@ -32,6 +32,7 @@ function utils.buildMap( path )
   map.tilewidth = mapdata.tilewidth
   map.tileheight = mapdata.tileheight
   map.occupied = {}
+  map.fow = {}
 
   map.tileset = love.graphics.newImage( mapdata.tilesets[1].image.source )
   for i, tilelayer in ipairs( mapdata.tilelayers ) do

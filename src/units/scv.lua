@@ -21,6 +21,8 @@ function scv:new( x, y, owner )
     health = 40.0,
     maxhealth = 40.0,
     selected = false,
+    range = 1,
+    sight = 2,
     state = 'idle',
     tx = -1,
     ty = -1,
