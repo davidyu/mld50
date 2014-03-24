@@ -5,7 +5,7 @@ local PrettyPrint = require 'vendor/lua-pretty-print/PrettyPrint'
 local scv = {}
 scv.__index = scv
 
-function scv:new( x, y )
+function scv:new( x, y, owner )
   local animrefs = {}
   local spritesheet = love.graphics.newImage( "art/spritesheets/SCV_Placeholder.png" )
   local animstate = 'md'
@@ -17,7 +17,7 @@ function scv:new( x, y )
   return setmetatable( {
     x = x or 0,
     y = y or 0,
-    owner = 0,
+    owner = owner or 0,
     health = 40.0,
     selected = false,
     state = 'idle',

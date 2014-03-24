@@ -21,6 +21,7 @@ end
 local utils = require 'utils'
 local Scv = require 'units/scv'
 local ux = require 'ux'
+local ai = require 'ai'
 
 -- locals
 local cam = nil
@@ -64,6 +65,10 @@ function game:enter()
 
   for i = 1, 20 do
     table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
+  end
+
+  for i = 1, 50 do
+    table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ), 1 ) )
   end
 end
 
@@ -135,12 +140,24 @@ function game:draw()
     if entity.selected then
       ux.drawSelection( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight )
     end
+    local r,g,b,a = love.graphics.getColor()
+    if entity.owner ~= 0 then
+      love.graphics.setColor( 159, 189, 77 )
+    else
+      love.graphics.setColor( 82, 211, 190 )
+    end
+    love.graphics.rectangle( 'fill', ( entity.x - 1 ) * map.tilewidth + 16, ( entity.y - 1 ) * map.tileheight, 32, 32 )
+    love.graphics.setColor( r,g,b,a )
     entity.anim:draw( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight )
   end
   cam:detach()
 end
 
 function game:update( dt )
+  -- backend
+  ai.update( entities, map )
+
+  -- user facing
   -- update camera
   local margin = 30
   local speed = 10
