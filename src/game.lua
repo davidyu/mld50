@@ -63,12 +63,22 @@ function game:enter()
 
   math.randomseed( os.time() )
 
-  for i = 1, 20 do
-    table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ) ) )
+  local basex, basey = 1, 1
+  for i = 1, 5 do
+    local newx, newy = basex + math.random( 5 ), basey + math.random( 5 )
+    while newx > map.width or newy > map.height do
+      newx, newy = basex + math.random( 5 ), basey + math.random( 5 )
+    end
+    table.insert( entities, Scv:new( newx, newy ) )
   end
 
-  for i = 1, 50 do
-    table.insert( entities, Scv:new( math.random( map.width ), math.random( map.height ), 1 ) )
+  basex, basey = math.random( map.width ), math.random( map.height )
+  for i = 1, 5 do
+    local newx, newy = basex + math.random( 5 ), basey + math.random( 5 )
+    while newx > map.width or newy > map.height do
+      newx, newy = basex + math.random( 5 ), basey + math.random( 5 )
+    end
+    table.insert( entities, Scv:new( newx, newy, 1 ) )
   end
 end
 
@@ -139,12 +149,13 @@ function game:draw()
   for i, entity in ipairs( entities ) do
     if entity.selected then
       ux.drawSelection( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight )
+      ux.drawHealth( entity.health, entity.maxhealth, ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight )
     end
     local r,g,b,a = love.graphics.getColor()
     if entity.owner ~= 0 then
-      love.graphics.setColor( 159, 189, 77 )
+      love.graphics.setColor( 0, 95, 146 )
     else
-      love.graphics.setColor( 82, 211, 190 )
+      love.graphics.setColor( 244, 35, 74 )
     end
     love.graphics.rectangle( 'fill', ( entity.x - 1 ) * map.tilewidth + 16, ( entity.y - 1 ) * map.tileheight, 32, 32 )
     love.graphics.setColor( r,g,b,a )

@@ -19,6 +19,7 @@ function scv:new( x, y, owner )
     y = y or 0,
     owner = owner or 0,
     health = 40.0,
+    maxhealth = 40.0,
     selected = false,
     state = 'idle',
     tx = -1,
