@@ -166,11 +166,22 @@ function game:update( dt )
 
   cam:lookAt( cx, cy )
 
-  -- update entity anims
+  -- update entities
   for i, entity in ipairs( entities ) do
     entity:update( pather, dt )
+    -- update anim module
     entity.anim:update( dt )
   end
+
+  -- update map occupied cache
+  map.occupied = {}
+
+  for i, entity in ipairs( entities ) do
+    map.occupied[ entity.x + ( entity.y - 1 ) * map.width ] = true
+  end
+
+  pather:setGrid( Grid( utils.buildCollisionMap( map ) ) )
+
 end
 
 return game

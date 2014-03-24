@@ -8,6 +8,7 @@ function utils.buildCollisionMap( map )
   for i, impass in ipairs( map.impassable ) do
     local col = 0
     if impass then col = 1 end
+    if map.occupied[i] ~= nil then col = 1 end
     table.insert( colMap[y], col )
 
     x = x + 1
@@ -30,6 +31,7 @@ function utils.buildMap( path )
   map.height = mapdata.height
   map.tilewidth = mapdata.tilewidth
   map.tileheight = mapdata.tileheight
+  map.occupied = {}
 
   map.tileset = love.graphics.newImage( mapdata.tilesets[1].image.source )
   for i, tilelayer in ipairs( mapdata.tilelayers ) do
