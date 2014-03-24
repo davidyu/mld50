@@ -178,15 +178,6 @@ function game:draw()
     entity.anim:draw( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight )
   end
 
-  -- draw HUD UI
-  if love.mouse.isDown( 'l' ) then
-    local r, g, b, a = love.graphics.getColor()
-    love.graphics.setColor( 12, 192, 57 )
-
-    love.graphics.rectangle( 'line', selx, sely, love.mouse.getX() - selx, love.mouse.getY() - sely )
-    love.graphics.setColor( r,g,b,a )
-  end
-
   -- draw FOW
   local r,g,b,a = love.graphics.getColor()
   for y = 1, map.height do
@@ -203,6 +194,15 @@ function game:draw()
   love.graphics.setColor( r,g,b,a )
 
   cam:detach()
+
+  -- draw HUD UI
+  if love.mouse.isDown( 'l' ) then
+    local r, g, b, a = love.graphics.getColor()
+    love.graphics.setColor( 12, 192, 57 )
+
+    love.graphics.rectangle( 'line', selx, sely, love.mouse.getX() - selx, love.mouse.getY() - sely )
+    love.graphics.setColor( r,g,b,a )
+  end
 end
 
 function game:update( dt )
