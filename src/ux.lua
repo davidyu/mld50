@@ -9,7 +9,8 @@ function ux.accselect( x, y , w, h, entities, map )
   local selections = {}
   for i, entity in ipairs( entities ) do
     -- print( ( "%d %d"):format( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight ) )
-    if ( entity.x - 1 ) * map.tilewidth >= x and ( entity.y - 1 ) * map.tileheight >= y and ( entity.x - 1 ) * map.tilewidth <= x + w and ( entity.y - 1 ) * map.tileheight <= y + h then
+    if ( ( ( entity.x - 1 ) * map.tilewidth >= x and ( entity.x - 1 ) * map.tilewidth <= x + w ) or ( x >= ( entity.x - 1 ) * map.tilewidth and x <= entity.x * map.tilewidth ) ) and
+       ( ( ( entity.y - 1 ) * map.tileheight >= y and ( entity.y - 1 ) * map.tileheight <= y + h ) or ( y >= ( entity.y - 1 ) * map.tileheight and y <= entity.y * map.tileheight ) ) then
       table.insert( selections, entity )
     end
   end
