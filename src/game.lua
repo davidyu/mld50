@@ -145,7 +145,7 @@ function game:draw()
     end
   end
 
-  -- draw entities
+  -- draw entities and entity-attached UI
   for i, entity in ipairs( entities ) do
     if entity.selected then
       ux.drawSelection( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight )
@@ -161,6 +161,16 @@ function game:draw()
     love.graphics.setColor( r,g,b,a )
     entity.anim:draw( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight )
   end
+
+  -- draw HUD UI
+  if love.mouse.isDown( 'l' ) then
+    local r, g, b, a = love.graphics.getColor()
+    love.graphics.setColor( 12, 192, 57 )
+
+    love.graphics.rectangle( 'line', selx, sely, love.mouse.getX() - selx, love.mouse.getY() - sely )
+    love.graphics.setColor( r,g,b,a )
+  end
+
   cam:detach()
 end
 
