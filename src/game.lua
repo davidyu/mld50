@@ -45,9 +45,9 @@ local function rebuildCollisionCache()
 
   for i, entity in ipairs( entities ) do
     if map.occupied[ entity.x + ( entity.y - 1 ) * map.width ] == nil then
-      map.occupied[ entity.x + ( entity.y - 1 ) * map.width ] = 1
+      map.occupied[ entity.x + ( entity.y - 1 ) * map.width ] = { entity }
     else
-      map.occupied[ entity.x + ( entity.y - 1 ) * map.width ] = map.occupied[ entity.x + ( entity.y - 1 ) * map.width ] + 1
+      table.insert( map.occupied[ entity.x + ( entity.y - 1 ) * map.width ], entity )
     end
   end
 
@@ -74,7 +74,7 @@ function game:enter()
     table.insert( entities, Scv:new( newx, newy ) )
   end
 
-  basex, basey = math.random( map.width - 5 ), math.random( map.height - 5 )
+  basex, basey = 10, 10 -- math.random( map.width - 5 ), math.random( map.height - 5 )
   for i = 1, 5 do
     local newx, newy = basex + math.random( 5 ), basey + math.random( 5 )
     while newx > map.width or newy > map.height do
@@ -91,15 +91,25 @@ function game:mousepressed( x, y, button )
 end
 
 function game:mousereleased( x, y, button )
+  -- right click
   if button == 'r' then
     -- set target
     local wx, wy = cam:worldCoords( x, y )
     local tx = math.floor( wx / map.tilewidth ) + 1
     local ty = math.floor( wy / map.tileheight ) + 1
-    table.foreach( selection, function( _, entity )
-                                entity.tx = tx
-                                entity.ty = ty
-                              end )
+    if map.occupied[ tx + ( ty - 1 ) * map.width ] ~= nil and map.occupied[ tx + ( ty - 1 ) * map.width ][1].owner ~= 0 then
+      table.foreach( selection, function( _, entity )
+                                  entity.attacktarget = map.occupied[ tx + ( ty - 1 ) * map.width ][1]
+                                end )
+    else
+      -- clear attack target
+      table.foreach( selection, function( _, entity ) entity.attacktarget = nil end )
+      -- set move target
+      table.foreach( selection, function( _, entity )
+                                  entity.tx = tx
+                                  entity.ty = ty
+                                end )
+    end
     return
   end
 
@@ -260,6 +270,10 @@ function game:update( dt )
     entity:update( pather, map, dt )
     -- update anim module
     entity.anim:update( dt )
+  end
+
+  for i, entity in ipairs( entities ) do
+    if entity.health == 0 then table.remove( entities, i ) end
   end
 
   -- update map occupied cache
