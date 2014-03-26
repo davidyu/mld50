@@ -20,6 +20,7 @@ end
 -- game modules
 local utils = require 'utils'
 local Scv = require 'units/scv'
+local Mineral = require 'doodads/mineral'
 local ux = require 'ux'
 local ai = require 'ai'
 
@@ -51,12 +52,17 @@ local function rebuildCollisionCache()
     end
   end
 
+  for i, mineral in ipairs( map.minerals ) do
+    map.occupied[ mineral.x + ( mineral.y - 1 ) * map.width ] = { mineral }
+  end
+
   pather:setGrid( Grid( utils.buildCollisionMap( map ) ) )
 end
 
 function game:enter()
   -- just the same map every time for now
   map = utils.buildMap( "art/maps/standard" )
+
   cam = Camera( 0, 0 )
   ux.init()
 
@@ -180,6 +186,11 @@ function game:draw()
     for x = 1, map.width do
       love.graphics.draw( map.tileset, map.tiles[ ( y - 1 ) * map.width + x ], ( x - 1 ) * map.tilewidth, ( y - 1 ) * map.tileheight )
     end
+  end
+
+  -- draw minerals
+  for _, mineral in ipairs( map.minerals ) do
+    love.graphics.draw( Mineral.sheet, Mineral.quad, ( mineral.x - 1 ) * map.tilewidth, ( mineral.y - 1 ) * map.tileheight )
   end
 
   -- draw entities and entity-attached UI
