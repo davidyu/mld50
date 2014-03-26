@@ -5,7 +5,6 @@ function ux.init()
 end
 
 function ux.accselect( x, y , w, h, entities, map )
-  -- print( ( "%d %d %d %d"):format( x, y, w, h ) )
   local selections = {}
   for i, entity in ipairs( entities ) do
     -- print( ( "%d %d"):format( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight ) )

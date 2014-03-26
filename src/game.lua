@@ -75,7 +75,7 @@ function game:enter()
   end
 
   basex, basey = 10, 10 -- math.random( map.width - 5 ), math.random( map.height - 5 )
-  for i = 1, 5 do
+  for i = 1, 20 do
     local newx, newy = basex + math.random( 5 ), basey + math.random( 5 )
     while newx > map.width or newy > map.height do
       newx, newy = basex + math.random( 5 ), basey + math.random( 5 )
@@ -97,13 +97,24 @@ function game:mousereleased( x, y, button )
     local wx, wy = cam:worldCoords( x, y )
     local tx = math.floor( wx / map.tilewidth ) + 1
     local ty = math.floor( wy / map.tileheight ) + 1
-    if map.occupied[ tx + ( ty - 1 ) * map.width ] ~= nil and map.occupied[ tx + ( ty - 1 ) * map.width ][1].owner ~= 0 then
-      table.foreach( selection, function( _, entity )
-                                  entity.attacktarget = map.occupied[ tx + ( ty - 1 ) * map.width ][1]
-                                end )
+    if map.occupied[ tx + ( ty - 1 ) * map.width ] ~= nil then
+      if map.occupied[ tx + ( ty - 1 ) * map.width ][1].owner ~= 0 then
+        table.foreach( selection, function( _, entity )
+                                    entity.target = map.occupied[ tx + ( ty - 1 ) * map.width ][1]
+                                    entity.targetcommand = 'attack'
+                                  end )
+      else
+        local targettype = map.occupied[ tx + ( ty - 1 ) * map.width ][1].__index
+        table.foreach( selection, function( _, entity )
+                                    if entity.friendlytargets[ targettype ] then
+                                      entity.target = map.occupied[ tx + ( ty - 1 ) * map.width ][1]
+                                      entity.targetcommand = 'repair'
+                                    end
+                                  end )
+      end
     else
-      -- clear attack target
-      table.foreach( selection, function( _, entity ) entity.attacktarget = nil end )
+      -- clear target
+      table.foreach( selection, function( _, entity ) entity.target = nil end )
       -- set move target
       table.foreach( selection, function( _, entity )
                                   entity.tx = tx

@@ -1,4 +1,5 @@
 require 'vendor/AnAL'
+local utils = require 'utils'
 
 local PrettyPrint = require 'vendor/lua-pretty-print/PrettyPrint'
 
@@ -22,6 +23,9 @@ function scv:new( x, y, owner )
     maxhealth = 40.0,
     selected = false,
     weapon = 5,
+    repair = 5,
+    friendlytargets = utils.Set { scv },
+    targetcommand = 'repair',
     cooldown = 0.8,
     atktimer = 0,
     range = 1,
@@ -30,7 +34,8 @@ function scv:new( x, y, owner )
     tx = -1,
     ty = -1,
     pathtable = {},
-    attacktarget = nil,
+    target = nil,
+    forcetarget = nil,
     animrefs = animrefs,
     animstate = animstate,
     anim = anim,
@@ -72,42 +77,52 @@ function scv:update( pather, map, dt )
     -- do action, timer is reset on postupdate
 
     -- clear stale attack targets
-    if self.attacktarget ~= nil and self.attacktarget.health == 0 then
-      self.attacktarget = nil
+    if self.target ~= nil and self.target.health == 0 then
+      self.target = nil
+    end
+
+    -- stop repairing if HP full
+    if self.target ~= nil and self.targetcommand == 'repair' and self.target.health / self.target.maxhealth >= 1 then
+      self.target = nil
     end
 
     -- within range, so attack!!!!
-    if self.attacktarget ~= nil and withinrange( self, self.attacktarget ) and self.atktimer > self.cooldown then
-      self.attacktarget:takedamage( self.weapon )
-      self.atktimer = 0
+    if self.target ~= nil and withinrange( self, self.target ) and self.atktimer > self.cooldown then
+      if self.targetcommand == 'repair' then
+        self.target:takedamage( -self.repair )
+        self.atktimer = 0
+      else
+        self.target:takedamage( self.weapon )
+        self.atktimer = 0
+      end
     end
 
     -- seek to target
-    if self.attacktarget ~= nil and self.tx ~= self.attacktarget.x and self.ty ~= self.attacktarget.y and not withinrange( self, self.attacktarget ) then
+    if self.target ~= nil and self.tx ~= self.target.x and self.ty ~= self.target.y and not withinrange( self, self.target ) then
       -- acquire empty spot within range
-      local candidatex, candidatey = self.attacktarget.x, self.attacktarget.y
+      local candidatex, candidatey = self.target.x, self.target.y
       for i = 0, self.range do
         for j = 0, self.range - i do
-          if map.occupied[ self.attacktarget.x + i + ( self.attacktarget.y - 1 - j ) * map.width ] == nil then
-            candidatex = self.attacktarget.x + i
-            candidatey = self.attacktarget.y - j
+          if map.occupied[ self.target.x + i + ( self.target.y - 1 - j ) * map.width ] == nil then
+            candidatex = self.target.x + i
+            candidatey = self.target.y - j
           end
-          if map.occupied[ self.attacktarget.x - i + ( self.attacktarget.y - 1 + j ) * map.width ] == nil then
-            candidatex = self.attacktarget.x - i
-            candidatey = self.attacktarget.y + j
+          if map.occupied[ self.target.x - i + ( self.target.y - 1 + j ) * map.width ] == nil then
+            candidatex = self.target.x - i
+            candidatey = self.target.y + j
           end
-          if map.occupied[ self.attacktarget.x + i + ( self.attacktarget.y - 1 + j ) * map.width ] == nil then
-            candidatex = self.attacktarget.x + i
-            candidatey = self.attacktarget.y + j
+          if map.occupied[ self.target.x + i + ( self.target.y - 1 + j ) * map.width ] == nil then
+            candidatex = self.target.x + i
+            candidatey = self.target.y + j
           end
-          if map.occupied[ self.attacktarget.x - i + ( self.attacktarget.y - 1 - j ) * map.width ] == nil then
-            candidatex = self.attacktarget.x - i
-            candidatey = self.attacktarget.y - j
+          if map.occupied[ self.target.x - i + ( self.target.y - 1 - j ) * map.width ] == nil then
+            candidatex = self.target.x - i
+            candidatey = self.target.y - j
           end
         end
       end
 
-      if candidatex ~= self.attacktarget.x or candidatey ~= self.attacktarget.y then
+      if candidatex ~= self.target.x or candidatey ~= self.target.y then
         self.tx = candidatex
         self.ty = candidatey
       end

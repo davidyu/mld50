@@ -21,6 +21,12 @@ function utils.buildCollisionMap( map )
   return colMap
 end
 
+function utils.Set( list )
+  local set = {}
+  for _, l in ipairs( list ) do set[ l ] = true end
+  return set
+end
+
 function utils.buildMap( path )
   assert( love.filesystem.exists( path .. ".lua" ),
           "the level " .. path .. "does not exist!" )

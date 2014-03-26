@@ -12,7 +12,8 @@ function ai.update( entities, map )
       end
 
       if target ~= nil and entity.health / entity.maxhealth > 0.4 then
-        entity.attacktarget = target
+        entity.target = target
+        entity.targetcommand = 'attack'
       else -- run!!!
         if table.maxn( entity.pathtable ) == 0 then
           entity.ty, entity.tx = math.random( map.width ), math.random( map.height )
