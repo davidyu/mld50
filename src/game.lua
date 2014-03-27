@@ -252,10 +252,10 @@ function game:draw()
   -- resource overlay
   local r, g, b, a = love.graphics.getColor()
   love.graphics.setColor( 0, 0, 0, 128 )
-  love.graphics.rectangle( "fill", 545, 5, 80, 28 )
+  love.graphics.rectangle( "fill", 635, 5, 130, 28 )
   love.graphics.setColor( 255, 255, 255, 255 )
   love.graphics.setFont( fonts["HUD"] )
-  love.graphics.print( "MINERALS: " .. game.playermineralcount, 650, 10 )
+  love.graphics.print( "MINERALS: " .. game.playermineralcount, 650, 15 )
   love.graphics.setColor( r, g, b, a )
 end
 
