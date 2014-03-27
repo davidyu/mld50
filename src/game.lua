@@ -27,7 +27,9 @@ local ai = require 'ai'
 -- locals
 local cam = nil
 local map = nil
+local fonts = {}
 local game = {}
+game.playerminerals = 50
 local entities = {}
 local pather = nil
 
@@ -39,6 +41,9 @@ local seltime = 0
 local selection = {}
 
 function game:init()
+  fonts = {
+    ["HUD"] = love.graphics.newFont( "art/fonts/PressStart2P.ttf", 8 );
+  }
 end
 
 local function rebuildCollisionCache()
@@ -104,17 +109,21 @@ function game:mousereleased( x, y, button )
     local tx = math.floor( wx / map.tilewidth ) + 1
     local ty = math.floor( wy / map.tileheight ) + 1
     if map.occupied[ tx + ( ty - 1 ) * map.width ] ~= nil then
-      if map.occupied[ tx + ( ty - 1 ) * map.width ][1].owner ~= 0 then
+      local target = map.occupied[ tx + ( ty - 1 ) * map.width ][1]
+      if target.owner ~= nil and target.owner ~= 0 then
         table.foreach( selection, function( _, entity )
-                                    entity.target = map.occupied[ tx + ( ty - 1 ) * map.width ][1]
+                                    entity.target = target
                                     entity.targetcommand = 'attack'
                                   end )
       else
-        local targettype = map.occupied[ tx + ( ty - 1 ) * map.width ][1].__index
+        local targettype = target.__index
         table.foreach( selection, function( _, entity )
                                     if entity.friendlytargets[ targettype ] then
-                                      entity.target = map.occupied[ tx + ( ty - 1 ) * map.width ][1]
+                                      entity.target = target
                                       entity.targetcommand = 'repair'
+                                    elseif targettype == Mineral then
+                                      entity.target = target
+                                      entity.targetcommand = 'mine'
                                     end
                                   end )
       end
@@ -235,6 +244,15 @@ function game:draw()
     love.graphics.rectangle( 'line', selx, sely, love.mouse.getX() - selx, love.mouse.getY() - sely )
     love.graphics.setColor( r,g,b,a )
   end
+
+  -- resource overlay
+  local r, g, b, a = love.graphics.getColor()
+  love.graphics.setColor( 0, 0, 0, 128 )
+  love.graphics.rectangle( "fill", 545, 5, 80, 28 )
+  love.graphics.setColor( 255, 255, 255, 255 )
+  love.graphics.setFont( fonts["HUD"] )
+  love.graphics.print( "MINERALS: " .. game.playerminerals, 650, 10 )
+  love.graphics.setColor( r, g, b, a )
 end
 
 function game:update( dt )
@@ -289,7 +307,7 @@ function game:update( dt )
 
   -- update entities
   for i, entity in ipairs( entities ) do
-    entity:update( pather, map, dt )
+    entity:update( game, pather, map, dt )
     -- update anim module
     entity.anim:update( dt )
   end

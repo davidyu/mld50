@@ -67,7 +67,7 @@ function scv:takedamage( damage )
   end
 end
 
-function scv:update( pather, map, dt )
+function scv:update( game, pather, map, dt )
   self.time = self.time + dt
   self.atktimer = self.atktimer + dt
 
@@ -91,6 +91,11 @@ function scv:update( pather, map, dt )
       if self.targetcommand == 'repair' then
         self.target:takedamage( -self.repair )
         self.atktimer = 0
+      elseif self.targetcommand == 'mine' then
+        -- subtract minerals from target
+        local minedquantity = 7 + math.random( 3 )
+        self.target.amount = self.target.amount - minedquantity
+        game.playerminerals = game.playerminerals + minedquantity
       else
         self.target:takedamage( self.weapon )
         self.atktimer = 0
