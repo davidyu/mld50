@@ -63,7 +63,7 @@ function utils.buildMap( path )
           if tile.id == 0 then -- spawn
             table.insert( map.spawn, { x = x, y = y } )
           elseif tile.id == 2 then -- mineral
-            table.insert( map.minerals, mineral:new( x, y, math.random( 500 ) + 500 ) )
+            table.insert( map.minerals, { x = x, y = y } )
           end
         end
       end

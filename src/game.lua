@@ -29,7 +29,8 @@ local cam = nil
 local map = nil
 local fonts = {}
 local game = {}
-game.playerminerals = 50
+game.playermineralcount = 50
+local minerals = {}
 local entities = {}
 local pather = nil
 
@@ -57,7 +58,7 @@ local function rebuildCollisionCache()
     end
   end
 
-  for i, mineral in ipairs( map.minerals ) do
+  for i, mineral in ipairs( minerals ) do
     map.occupied[ mineral.x + ( mineral.y - 1 ) * map.width ] = { mineral }
   end
 
@@ -67,6 +68,9 @@ end
 function game:enter()
   -- just the same map every time for now
   map = utils.buildMap( "art/maps/standard" )
+  table.foreach( map.minerals, function( _, pos )
+                                 table.insert( minerals, Mineral:new( pos.x, pos.y, math.random( 500 ) + 500 ) )
+                               end )
 
   cam = Camera( 0, 0 )
   ux.init()
@@ -198,7 +202,7 @@ function game:draw()
   end
 
   -- draw minerals
-  for _, mineral in ipairs( map.minerals ) do
+  for _, mineral in ipairs( minerals ) do
     love.graphics.draw( Mineral.sheet, Mineral.quad, ( mineral.x - 1 ) * map.tilewidth, ( mineral.y - 1 ) * map.tileheight )
   end
 
@@ -251,7 +255,7 @@ function game:draw()
   love.graphics.rectangle( "fill", 545, 5, 80, 28 )
   love.graphics.setColor( 255, 255, 255, 255 )
   love.graphics.setFont( fonts["HUD"] )
-  love.graphics.print( "MINERALS: " .. game.playerminerals, 650, 10 )
+  love.graphics.print( "MINERALS: " .. game.playermineralcount, 650, 10 )
   love.graphics.setColor( r, g, b, a )
 end
 

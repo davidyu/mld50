@@ -95,7 +95,7 @@ function scv:update( game, pather, map, dt )
         -- subtract minerals from target
         local minedquantity = 7 + math.random( 3 )
         self.target.amount = self.target.amount - minedquantity
-        game.playerminerals = game.playerminerals + minedquantity
+        game.playermineralcount = game.playermineralcount + minedquantity
       else
         self.target:takedamage( self.weapon )
         self.atktimer = 0
