@@ -60,6 +60,19 @@ local function rebuildCollisionCache()
     end
   end
 
+  for i, building in ipairs( buildings ) do
+    for xoffset = 0, building.w - 1 do
+      for yoffset = 0, building.h - 1 do
+        local index = building.x + xoffset + ( building.y + yoffset - 1 ) * map.width
+        if map.occupied[ index ] == nil then
+          map.occupied[ index ] = { building }
+        else
+          table.insert( map.occupied[ index ], building )
+        end
+      end
+    end
+  end
+
   for i, mineral in ipairs( minerals ) do
     map.occupied[ mineral.x + ( mineral.y - 1 ) * map.width ] = { mineral }
   end
@@ -289,6 +302,20 @@ function game:update( dt )
           map.fow[ entity.x - i + ( entity.y - 1 + j ) * map.width ] = false
           map.fow[ entity.x + i + ( entity.y - 1 + j ) * map.width ] = false
           map.fow[ entity.x - i + ( entity.y - 1 - j ) * map.width ] = false
+        end
+      end
+    end
+  end
+
+  for i, building in ipairs( buildings ) do
+    -- clear FOW within the viewing range of all friendly buildings
+    if building.owner == 0 then
+      for i = 0, building.sight do
+        for j = 0, building.sight - i do
+          map.fow[ building.x + i + ( building.y - 1 - j ) * map.width ] = false
+          map.fow[ building.x - i + ( building.y - 1 + j ) * map.width ] = false
+          map.fow[ building.x + i + ( building.y - 1 + j ) * map.width ] = false
+          map.fow[ building.x - i + ( building.y - 1 - j ) * map.width ] = false
         end
       end
     end

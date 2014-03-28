@@ -7,9 +7,13 @@ function commandcenter:new( x, y, owner )
   return setmetatable( {
     x = x or 0,
     y = y or 0,
+    w = 2,
+    h = 2,
+    sight = 4,
     anim = anim,
     owner = owner or 0,
     buildqueue = {},
+    health = 400,
     buildtimes = {
       ["scv"] = 10
     },
