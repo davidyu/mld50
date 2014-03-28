@@ -99,6 +99,8 @@ function game:enter()
     end
     table.insert( entities, Scv:new( newx, newy, 1 ) )
   end
+
+  table.insert( buildings, CommandCenter:new( 3, 3 ) )
 end
 
 function game:mousepressed( x, y, button )
@@ -320,7 +322,14 @@ function game:update( dt )
 
   -- update entities
   for i, building in ipairs( buildings ) do
-    building:update( dt )
+    if building.__index == CommandCenter then
+      if game.playermineralcount >= 50 and table.maxn( building.buildqueue ) <= 9 then
+        local basex, basey = building.x, building.y
+        building:enqueueunit( Scv:new( basex + math.random( 5 ) - 2, basey + math.random( 5 ) - 2 ) )
+        game.playermineralcount = game.playermineralcount - 50
+      end
+    end
+    building:update( entities, dt )
   end
 
   for i, entity in ipairs( entities ) do

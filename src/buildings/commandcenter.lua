@@ -14,19 +14,23 @@ function commandcenter:new( x, y, owner )
   }, commandcenter )
 end
 
-function enqueueunit( unit )
+function commandcenter:enqueueunit( unit )
   assert( unit.__type == scv )
-  table.insert( buildqueue, unit )
+  if table.maxn( self.buildqueue ) <= 9 then -- only allow up to 10 units to be placed in the queue
+    table.insert( self.buildqueue, unit )
+  end
 end
 
 function commandcenter:update( entities, dt )
   -- if cooldown time has hit a threshold, then
   -- pop a unit off the queue and construct an scv
+  self.time = self.time + dt
   if self.time > 10.0 then
-    if table.maxn( buildqueue ) > 0 then
-      local newunit = table.remove( buildqueue, 1 )
+    if table.maxn( self.buildqueue ) > 0 then
+      local newunit = table.remove( self.buildqueue, 1 )
       table.insert( entities, newunit )
     end
+    self.time = 0.0
   end
 end
 
