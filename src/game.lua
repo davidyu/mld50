@@ -20,6 +20,7 @@ end
 -- game modules
 local utils = require 'utils'
 local Scv = require 'units/scv'
+local CommandCenter = require 'buildings/commandcenter'
 local Mineral = require 'doodads/mineral'
 local ux = require 'ux'
 local ai = require 'ai'
@@ -29,6 +30,7 @@ local cam = nil
 local map = nil
 local fonts = {}
 local game = {}
+local buildings = {}
 game.playermineralcount = 50
 local minerals = {}
 local entities = {}
@@ -314,6 +316,11 @@ function game:update( dt )
     entity:update( game, pather, map, dt )
     -- update anim module
     entity.anim:update( dt )
+  end
+
+  -- update entities
+  for i, building in ipairs( buildings ) do
+    building:update( dt )
   end
 
   for i, entity in ipairs( entities ) do
