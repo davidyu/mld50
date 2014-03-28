@@ -2,9 +2,12 @@ local commandcenter = {}
 commandcenter.__index = commandcenter
 
 function commandcenter:new( x, y, owner )
+  local spritesheet = love.graphics.newImage( "art/spritesheets/CommandCenter_Placeholder.png" )
+  local anim = newAnimation( spritesheet, 128, 128, 0.5, 1 )
   return setmetatable( {
     x = x or 0,
     y = y or 0,
+    anim = anim,
     owner = owner or 0,
     buildqueue = {},
     buildtimes = {

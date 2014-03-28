@@ -227,6 +227,11 @@ function game:draw()
     entity.anim:draw( ( entity.x - 1 ) * map.tilewidth, ( entity.y - 1 ) * map.tileheight )
   end
 
+  -- draw buildings
+  for i, building in ipairs( buildings ) do
+    building.anim:draw( ( building.x - 1 ) * map.tilewidth, ( building.y - 1 ) * map.tileheight )
+  end
+
   -- draw FOW
   local r,g,b,a = love.graphics.getColor()
   for y = 1, map.height do
@@ -320,7 +325,7 @@ function game:update( dt )
     entity.anim:update( dt )
   end
 
-  -- update entities
+  -- update buildings
   for i, building in ipairs( buildings ) do
     if building.__index == CommandCenter then
       if game.playermineralcount >= 50 and table.maxn( building.buildqueue ) <= 9 then
@@ -329,6 +334,7 @@ function game:update( dt )
         game.playermineralcount = game.playermineralcount - 50
       end
     end
+    building.anim:update( dt )
     building:update( entities, dt )
   end
 
